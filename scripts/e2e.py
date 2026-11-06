@@ -25,6 +25,7 @@ if __name__ == '__main__':
             'variables': {
                 'goal': os.environ.get('GOAL', 'Write a Go function UniqueSorted(values []int) []int. Return unique integers sorted ascending without mutating the input. Return a non-nil empty slice for nil or empty input. Include table-driven tests for negative values, duplicates, nil, empty and input immutability. Keep the answer concise.'),
                 'maxRounds': 3,
+                'aiTimeoutSeconds': int(os.environ.get('AI_TIMEOUT_SECONDS', '120')),
             },
         })
         uid = result['id']
@@ -34,15 +35,21 @@ if __name__ == '__main__':
         instance = api('/api/v1/instances/' + uid)
         if instance['status'] != 'running':
             break
+        tasks = api('/api/v1/tasks?instanceId=' + uid)['tasks']
+        if any(task['element_id'] == 'HumanReview' for task in tasks):
+            break
         if time.monotonic() > deadline:
             raise TimeoutError('Process is still running: ' + uid)
         time.sleep(5)
     history = api('/api/v1/instances/' + uid + '/history')
     result = {'instance': instance, 'history': history}
     (OUT / 'e2e-result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
-    if instance['status'] != 'completed':
+    if instance['status'] not in ('completed', 'running'):
         raise RuntimeError('Process status: ' + instance['status'])
     variables = next(r['variables'] for r in reversed(history['records']) if r.get('variables'))
-    assert variables['outcome'] in ('accepted', 'needs_human'), variables
+    assert variables['outcome'] in ('accepted', 'needs_human', 'approved_by_human', 'rejected_by_human'), variables
     print('Outcome:', variables['outcome'], 'rounds:', variables['round'])
+    if variables['outcome'] == 'needs_human':
+        assert instance['status'] == 'running', instance
+        print('Waiting for reviewers: ' + BASE + '/ui/#/tasks?user=reviewer&groups=reviewers')
     print('History:', OUT / 'e2e-result.json')

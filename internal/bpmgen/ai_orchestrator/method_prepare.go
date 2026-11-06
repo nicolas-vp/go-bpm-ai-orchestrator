@@ -6,6 +6,7 @@ import (
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/bpmgen/model"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/bpmgen/services"
 	"strings"
+	"time"
 )
 
 func Prepare(ctx context.Context, svc *services.Services, data *model.DataModel) error {
@@ -18,6 +19,13 @@ func Prepare(ctx context.Context, svc *services.Services, data *model.DataModel)
 	if strings.TrimSpace(data.Goal) == "" {
 		return fmt.Errorf("goal is required")
 	}
+	if data.AITimeoutSeconds == 0 {
+		data.AITimeoutSeconds = 120
+	}
+	if data.AITimeoutSeconds < 1 || data.AITimeoutSeconds > 600 {
+		return fmt.Errorf("aiTimeoutSeconds must be between 1 and 600")
+	}
+	data.IterationDeadline = time.Now().Add(time.Duration(data.AITimeoutSeconds) * time.Second).UTC().Format(time.RFC3339Nano)
 	data.Round++
 	return nil
 }

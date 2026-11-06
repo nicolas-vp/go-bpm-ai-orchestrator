@@ -8,5 +8,6 @@ import (
 
 func Escalate(ctx context.Context, svc *services.Services, data *model.DataModel) error {
 	data.Outcome = "needs_human"
+	data.EscalationReason = "iteration_limit"
 	return nil
 }
