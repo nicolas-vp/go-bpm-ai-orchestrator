@@ -1,0 +1,29 @@
+name: go-bpm-ai-orchestrator
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: ai_orchestrator
+      POSTGRES_USER: orchestrator
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - aidata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orchestrator -d ai_orchestrator"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  orchestrator:
+    build: .
+    environment:
+      GO_BPM_DSN: postgres://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/ai_orchestrator?sslmode=disable
+      OLLAMA_URL: ${OLLAMA_URL:-http://192.168.1.10:11434}
+      WRITER_MODEL: ${WRITER_MODEL:-qwen3-coder:30b-32k}
+      REVIEWER_MODEL: ${REVIEWER_MODEL:-qwen2.5-coder:32b-8k}
+    ports:
+      - "127.0.0.1:8092:8092"
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  aidata:

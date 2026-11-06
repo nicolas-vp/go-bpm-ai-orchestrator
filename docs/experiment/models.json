@@ -1,0 +1,30 @@
+{
+  "writer": {
+    "parameters": "top_p                          0.8\nnum_ctx                        32768\nnum_predict                    8192\nrepeat_penalty                 1.05\nstop                           \"<|im_start|>\"\nstop                           \"<|im_end|>\"\nstop                           \"<|endoftext|>\"\ntemperature                    0.7\ntop_k                          20",
+    "details": {
+      "parent_model": "qwen3-coder:30b",
+      "format": "gguf",
+      "family": "qwen3moe",
+      "families": [
+        "qwen3moe"
+      ],
+      "parameter_size": "30.5B",
+      "quantization_level": "Q4_K_M"
+    },
+    "modified_at": "2026-11-02T18:19:49.235941668Z"
+  },
+  "reviewer": {
+    "parameters": "num_ctx                        8192",
+    "details": {
+      "parent_model": "qwen2.5-coder:32b-16k",
+      "format": "gguf",
+      "family": "qwen2",
+      "families": [
+        "qwen2"
+      ],
+      "parameter_size": "32.8B",
+      "quantization_level": "Q4_K_M"
+    },
+    "modified_at": "2026-11-02T17:44:05.61829098Z"
+  }
+}

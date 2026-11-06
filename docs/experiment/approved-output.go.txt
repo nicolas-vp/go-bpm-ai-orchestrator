@@ -1,0 +1,112 @@
+package main
+
+import (
+    "fmt"
+    "sort"
+)
+
+// UniqueSorted returns unique integers from input sorted ascending
+// without mutating the input slice
+func UniqueSorted(values []int) []int {
+    if values == nil {
+        return []int{}
+    }
+
+    // Create a copy to avoid mutating input
+    copy := make([]int, len(values))
+    copy(copy, values)
+
+    // Remove duplicates using map
+    uniqueMap := make(map[int]bool)
+    uniqueSlice := []int{}
+
+    for _, v := range copy {
+        if !uniqueMap[v] {
+            uniqueMap[v] = true
+            uniqueSlice = append(uniqueSlice, v)
+        }
+    }
+
+    // Sort result
+    sort.Ints(uniqueSlice)
+    return uniqueSlice
+}
+
+func main() {
+    // Test cases
+    tests := []struct {
+        name     string
+        input    []int
+        expected []int
+    }{
+        {
+            name:     "nil input",
+            input:    nil,
+            expected: []int{},
+        },
+        {
+            name:     "empty input",
+            input:    []int{},
+            expected: []int{},
+        },
+        {
+            name:     "positive values",
+            input:    []int{3, 1, 4, 1, 5, 9, 2, 6, 5},
+            expected: []int{1, 2, 3, 4, 5, 6, 9},
+        },
+        {
+            name:     "negative values",
+            input:    []int{-3, -1, -4, -1, -5, -9, -2, -6, -5},
+            expected: []int{-9, -6, -5, -4, -3, -2, -1},
+        },
+        {
+            name:     "mixed positive and negative",
+            input:    []int{3, -1, 4, -1, 5, -9, 2, -6, 5},
+            expected: []int{-9, -6, -1, 2, 3, 4, 5},
+        },
+        {
+            name:     "duplicates only",
+            input:    []int{5, 5, 5, 5},
+            expected: []int{5},
+        },
+        {
+            name:     "already sorted",
+            input:    []int{1, 2, 3, 4, 5},
+            expected: []int{1, 2, 3, 4, 5},
+        },
+        {
+            name:     "reverse sorted",
+            input:    []int{5, 4, 3, 2, 1},
+            expected: []int{1, 2, 3, 4, 5},
+        },
+    }
+
+    allPassed := true
+    for _, tt := range tests {
+        result := UniqueSorted(tt.input)
+        if len(result) != len(tt.expected) {
+            fmt.Printf("FAIL: %s - length mismatch\n", tt.name)
+            allPassed = false
+            continue
+        }
+        for i, v := range result {
+            if v != tt.expected[i] {
+                fmt.Printf("FAIL: %s - value mismatch at index %d\n", tt.name, i)
+                allPassed = false
+                break
+            }
+        }
+        if len(result) == len(tt.expected) {
+            for i, v := range result {
+                if v != tt.expected[i] {
+                    allPassed = false
+                    break
+                }
+            }
+        }
+    }
+
+    if allPassed {
+        fmt.Println("All tests passed!")
+    }
+}

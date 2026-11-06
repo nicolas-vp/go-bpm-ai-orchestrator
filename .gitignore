@@ -1,0 +1,12 @@
+/bin
+/.idea
+/.vscode
+.DS_Store
+/go.work
+/go.work.sum
+*.out
+.env
+
+/.run/
+
+__pycache__/
