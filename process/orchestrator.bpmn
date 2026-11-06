@@ -1,20 +1,16 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:gobpm="https://github.com/nicolas-vp/go-bpm/schema/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_orchestrator" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="AiOrchestrator" name="AI Orchestrator" isExecutable="true">
     <bpmn:startEvent id="Start" name="Начало">
       <bpmn:outgoing>f1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:task id="Prepare" name="Следующая итерация">
-      <bpmn:incoming>f1</bpmn:incoming>
-      <bpmn:outgoing>f2</bpmn:outgoing>
-      <bpmn:incoming>again</bpmn:incoming>
-    </bpmn:task>
     <bpmn:serviceTask id="Write" name="Исполнитель · Qwen3">
       <bpmn:extensionElements>
         <gobpm:taskDefinition type="ai" retries="2" />
         <gobpm:aiTask model="writer" systemPrompt="You are a software engineer. Solve the task. Return a concise solution with code and tests as text. Use reviewer feedback to improve the previous draft. Do not claim you ran code." prompt="Task: ${goal}&#10;Previous draft: ${draft}&#10;Reviewer feedback: ${review.feedback}" resultVariable="draft" />
       </bpmn:extensionElements>
-      <bpmn:incoming>f2</bpmn:incoming>
+      <bpmn:incoming>again</bpmn:incoming>
+      <bpmn:incoming>f1</bpmn:incoming>
       <bpmn:outgoing>f3</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="Review" name="Рецензент · Qwen2.5">
@@ -42,122 +38,128 @@
       <bpmn:outgoing>again</bpmn:outgoing>
       <bpmn:outgoing>stop</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="Escalate" name="Лимит исчерпан">
-      <bpmn:incoming>stop</bpmn:incoming>
-      <bpmn:outgoing>f10</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:endEvent id="Stopped" name="Решено человеком">
       <bpmn:incoming>resolved</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="f1" sourceRef="Start" targetRef="Prepare" name="">
-</bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="f2" sourceRef="Prepare" targetRef="Write" name="">
-</bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="f3" sourceRef="Write" targetRef="Review" name="">
-</bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="f4" sourceRef="Review" targetRef="Verdict" name="">
-</bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="yes" sourceRef="Verdict" targetRef="Accept" name="да">
+    <bpmn:sequenceFlow id="f1" name="" sourceRef="Start" targetRef="Write" />
+    <bpmn:sequenceFlow id="f3" name="" sourceRef="Write" targetRef="Review" />
+    <bpmn:sequenceFlow id="f4" name="" sourceRef="Review" targetRef="Verdict" />
+    <bpmn:sequenceFlow id="yes" name="да" sourceRef="Verdict" targetRef="Accept">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=review.approved</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="f6" sourceRef="Accept" targetRef="Done" name="">
-</bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="no" sourceRef="Verdict" targetRef="Limit" name="нет">
-</bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="again" sourceRef="Limit" targetRef="Prepare" name="доработка">
+    <bpmn:sequenceFlow id="f6" name="" sourceRef="Accept" targetRef="Done" />
+    <bpmn:sequenceFlow id="no" name="нет" sourceRef="Verdict" targetRef="Limit" />
+    <bpmn:sequenceFlow id="again" name="доработка" sourceRef="Limit" targetRef="Write">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=round &lt; maxRounds</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="stop" sourceRef="Limit" targetRef="Escalate" name="лимит">
-</bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="f10" sourceRef="Escalate" targetRef="HumanReview" name="">
-</bpmn:sequenceFlow>
-    <bpmn:boundaryEvent id="WriteTimeout" name="Срок итерации" attachedToRef="Write" cancelActivity="true">
-      <bpmn:outgoing>fromWriteTimeout</bpmn:outgoing>
+    <bpmn:sequenceFlow id="stop" name="лимит" sourceRef="Limit" targetRef="HumanReview" />
+    <bpmn:boundaryEvent id="WriteTimeout" name="Время итерации" attachedToRef="Write">
+      <bpmn:outgoing>Flow_0levoh9</bpmn:outgoing>
       <bpmn:timerEventDefinition>
         <bpmn:timeDate>=iterationDeadline</bpmn:timeDate>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-    <bpmn:boundaryEvent id="ReviewTimeout" name="Срок итерации" attachedToRef="Review" cancelActivity="true">
-      <bpmn:outgoing>fromReviewTimeout</bpmn:outgoing>
+    <bpmn:boundaryEvent id="ReviewTimeout" name="Время итерации" attachedToRef="Review">
+      <bpmn:outgoing>Flow_19081va</bpmn:outgoing>
       <bpmn:timerEventDefinition>
         <bpmn:timeDate>=iterationDeadline</bpmn:timeDate>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-    <bpmn:task id="MarkTimeout" name="Таймаут AI">
-      <bpmn:incoming>fromWriteTimeout</bpmn:incoming>
-      <bpmn:incoming>fromReviewTimeout</bpmn:incoming>
-      <bpmn:outgoing>timeoutHuman</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:userTask id="HumanReview" name="Нужен человек">
       <bpmn:extensionElements>
         <gobpm:assignmentDefinition candidateGroups="reviewers" />
       </bpmn:extensionElements>
-      <bpmn:incoming>f10</bpmn:incoming>
-      <bpmn:incoming>timeoutHuman</bpmn:incoming>
+      <bpmn:incoming>Flow_0levoh9</bpmn:incoming>
+      <bpmn:incoming>Flow_19081va</bpmn:incoming>
+      <bpmn:incoming>stop</bpmn:incoming>
       <bpmn:outgoing>humanResolved</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:task id="ResolveHuman" name="Сохранить решение">
       <bpmn:incoming>humanResolved</bpmn:incoming>
       <bpmn:outgoing>resolved</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="fromWriteTimeout" sourceRef="WriteTimeout" targetRef="MarkTimeout" />
-    <bpmn:sequenceFlow id="fromReviewTimeout" sourceRef="ReviewTimeout" targetRef="MarkTimeout" />
-    <bpmn:sequenceFlow id="timeoutHuman" sourceRef="MarkTimeout" targetRef="HumanReview" />
     <bpmn:sequenceFlow id="humanResolved" sourceRef="HumanReview" targetRef="ResolveHuman" />
     <bpmn:sequenceFlow id="resolved" sourceRef="ResolveHuman" targetRef="Stopped" />
+    <bpmn:sequenceFlow id="Flow_0levoh9" sourceRef="WriteTimeout" targetRef="HumanReview" />
+    <bpmn:sequenceFlow id="Flow_19081va" sourceRef="ReviewTimeout" targetRef="HumanReview" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram">
     <bpmndi:BPMNPlane id="Plane" bpmnElement="AiOrchestrator">
-      <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
-        <dc:Bounds x="80" y="180" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Prepare_di" bpmnElement="Prepare">
-        <dc:Bounds x="160" y="158" width="130" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Write_di" bpmnElement="Write">
         <dc:Bounds x="340" y="158" width="145" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Review_di" bpmnElement="Review">
         <dc:Bounds x="535" y="158" width="145" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Verdict_di" bpmnElement="Verdict">
+      <bpmndi:BPMNShape id="Verdict_di" bpmnElement="Verdict" isMarkerVisible="true">
         <dc:Bounds x="735" y="173" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="775" y="216" width="50" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Accept_di" bpmnElement="Accept">
-        <dc:Bounds x="850" y="158" width="130" height="80" />
+      <bpmndi:BPMNShape id="Limit_di" bpmnElement="Limit" isMarkerVisible="true">
+        <dc:Bounds x="735" y="345" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="723" y="395" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
+        <dc:Bounds x="232" y="180" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="231" y="216" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Stopped_di" bpmnElement="Stopped">
+        <dc:Bounds x="1282" y="12" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1272" y="56" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ResolveHuman_di" bpmnElement="ResolveHuman">
+        <dc:Bounds x="1075" y="-10" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="HumanReview_di" bpmnElement="HumanReview">
+        <dc:Bounds x="875" y="-10" width="150" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Done_di" bpmnElement="Done">
-        <dc:Bounds x="1030" y="180" width="36" height="36" />
+        <dc:Bounds x="1282" y="180" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1278" y="233" width="44" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Limit_di" bpmnElement="Limit">
-        <dc:Bounds x="735" y="345" width="50" height="50" />
+      <bpmndi:BPMNShape id="Accept_di" bpmnElement="Accept">
+        <dc:Bounds x="1075" y="158" width="130" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Escalate_di" bpmnElement="Escalate">
-        <dc:Bounds x="850" y="330" width="130" height="80" />
+      <bpmndi:BPMNShape id="ReviewTimeout_di" bpmnElement="ReviewTimeout">
+        <dc:Bounds x="632" y="140" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="667" y="123" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WriteTimeout_di" bpmnElement="WriteTimeout">
+        <dc:Bounds x="442" y="140" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="470" y="123" width="85" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="f1_di" bpmnElement="f1">
-        <di:waypoint x="116" y="198.0" />
-        <di:waypoint x="160" y="198.0" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="f2_di" bpmnElement="f2">
-        <di:waypoint x="290" y="198.0" />
-        <di:waypoint x="340" y="198.0" />
+        <di:waypoint x="268" y="198" />
+        <di:waypoint x="340" y="198" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="f3_di" bpmnElement="f3">
-        <di:waypoint x="485" y="198.0" />
-        <di:waypoint x="535" y="198.0" />
+        <di:waypoint x="485" y="198" />
+        <di:waypoint x="535" y="198" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="f4_di" bpmnElement="f4">
-        <di:waypoint x="680" y="198.0" />
-        <di:waypoint x="735" y="198.0" />
+        <di:waypoint x="680" y="198" />
+        <di:waypoint x="735" y="198" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="yes_di" bpmnElement="yes">
-        <di:waypoint x="785" y="198.0" />
-        <di:waypoint x="850" y="198.0" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="f6_di" bpmnElement="f6">
-        <di:waypoint x="980" y="198.0" />
-        <di:waypoint x="1030" y="198.0" />
+        <di:waypoint x="785" y="198" />
+        <di:waypoint x="1075" y="198" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="812" y="173" width="13" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="no_di" bpmnElement="no">
         <di:waypoint x="760" y="223" />
@@ -165,61 +167,41 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="again_di" bpmnElement="again">
         <di:waypoint x="735" y="370" />
-        <di:waypoint x="225" y="370" />
-        <di:waypoint x="225" y="238" />
+        <di:waypoint x="413" y="370" />
+        <di:waypoint x="413" y="238" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="547" y="345" width="54" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="stop_di" bpmnElement="stop">
-        <di:waypoint x="785" y="370.0" />
-        <di:waypoint x="850" y="370.0" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="WriteTimeout_di" bpmnElement="WriteTimeout">
-        <dc:Bounds x="400" y="220" width="36" height="36" />
+        <di:waypoint x="785" y="370" />
+        <di:waypoint x="940" y="370" />
+        <di:waypoint x="940" y="70" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="378" y="258" width="90" height="28" />
+          <dc:Bounds x="785" y="345" width="32" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ReviewTimeout_di" bpmnElement="ReviewTimeout">
-        <dc:Bounds x="600" y="220" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="578" y="258" width="90" height="28" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="MarkTimeout_di" bpmnElement="MarkTimeout">
-        <dc:Bounds x="535" y="500" width="145" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="HumanReview_di" bpmnElement="HumanReview">
-        <dc:Bounds x="850" y="500" width="150" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ResolveHuman_di" bpmnElement="ResolveHuman">
-        <dc:Bounds x="1060" y="500" width="130" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Stopped_di" bpmnElement="Stopped">
-        <dc:Bounds x="1250" y="522" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="f10_di" bpmnElement="f10">
-        <di:waypoint x="915" y="410" />
-        <di:waypoint x="915" y="500" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="fromWriteTimeout_di" bpmnElement="fromWriteTimeout">
-        <di:waypoint x="418" y="256" />
-        <di:waypoint x="418" y="540" />
-        <di:waypoint x="535" y="540" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="fromReviewTimeout_di" bpmnElement="fromReviewTimeout">
-        <di:waypoint x="618" y="256" />
-        <di:waypoint x="618" y="500" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="timeoutHuman_di" bpmnElement="timeoutHuman">
-        <di:waypoint x="680" y="540" />
-        <di:waypoint x="850" y="540" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="humanResolved_di" bpmnElement="humanResolved">
-        <di:waypoint x="1000" y="540" />
-        <di:waypoint x="1060" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="resolved_di" bpmnElement="resolved">
-        <di:waypoint x="1190" y="540" />
-        <di:waypoint x="1250" y="540" />
+        <di:waypoint x="1205" y="30" />
+        <di:waypoint x="1282" y="30" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="humanResolved_di" bpmnElement="humanResolved">
+        <di:waypoint x="1025" y="30" />
+        <di:waypoint x="1075" y="30" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0levoh9_di" bpmnElement="Flow_0levoh9">
+        <di:waypoint x="460" y="140" />
+        <di:waypoint x="460" y="10" />
+        <di:waypoint x="875" y="10" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19081va_di" bpmnElement="Flow_19081va">
+        <di:waypoint x="650" y="140" />
+        <di:waypoint x="650" y="50" />
+        <di:waypoint x="875" y="50" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f6_di" bpmnElement="f6">
+        <di:waypoint x="1205" y="198" />
+        <di:waypoint x="1282" y="198" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
