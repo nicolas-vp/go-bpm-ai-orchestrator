@@ -10,6 +10,7 @@
 
 - `process/orchestrator.bpmn` — единственный исполняемый процесс и его диаграмма.
 - `internal/bpmgen/` — сгенерированный граф; `model/` и `method_*.go` без заголовка Code generated — рукописные.
+- `internal/orchestration/` — подготовка итерации и причины эскалации в обработчиках переходов; приложение получает граф через `orchestration.Processes(svc)`.
 - `internal/ollama/` — реализация `engine.AIClient`, HTTP `/api/chat`, JSON Schema вердикта и дополнительная проверка ответа.
 - `cmd/orchestrator/` — приложение: миграции, очередь, API, стандартная консоль go-bpm, метрики.
 - `internal/scenarios/` — интеграционные сценарии нового процесса.

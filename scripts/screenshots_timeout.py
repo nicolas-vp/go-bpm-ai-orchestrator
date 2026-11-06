@@ -16,12 +16,13 @@ def wait(expression):
 
 if __name__ == '__main__':
     uid = os.environ['INSTANCE_ID']
+    prefix = os.environ.get('SCREENSHOT_PREFIX', '')
     task = next(t for t in get(BASE + '/api/v1/tasks?instanceId=' + uid)['tasks'] if t['element_id'] == 'HumanReview')
     key = task['business_key']
     cdp('Emulation.setDeviceMetricsOverride', {'width': 1800, 'height': 1100, 'deviceScaleFactor': 1, 'mobile': False})
-    shot('04-timeout.png', '/ui/history/?instanceId=' + uid,
+    shot(prefix + '04-timeout.png', '/ui/history/?instanceId=' + uid,
          'document.querySelectorAll("#canvas .djs-element").length > 3')
-    shot('05-human-task.png', '/ui/#/tasks?user=reviewer&groups=reviewers',
+    shot(prefix + '05-human-task.png', '/ui/#/tasks?user=reviewer&groups=reviewers',
          'document.querySelector("#tasks-open-count").textContent !== "0"')
     find = 'const c=[...document.querySelectorAll("li.card")].find(c=>c.textContent.includes(' + json.dumps(key) + '));if(!c)throw Error("Task missing");'
     evaluate('(()=>{' + find + '[...c.querySelectorAll("button")].find(b=>b.textContent==="Взять").click()})()')
@@ -31,7 +32,7 @@ if __name__ == '__main__':
     evaluate('(()=>{const b=[...document.querySelectorAll("#complete-editor button")].find(b=>b.textContent.includes("JSON"));b.click()})()')
     decision = {'humanApproved': False, 'humanComment': 'AI превысил срок итерации. Результат отклонён, требуется отдельный повтор после проверки задания.'}
     evaluate('document.querySelector("#complete-editor textarea").value=' + json.dumps(json.dumps(decision, ensure_ascii=False)))
-    save('06-human-decision.png')
+    save(prefix + '06-human-decision.png')
     evaluate('document.querySelector("#complete-form").requestSubmit()')
     wait('!document.querySelector("#complete").open')
     for _ in range(100):
@@ -40,5 +41,5 @@ if __name__ == '__main__':
         time.sleep(.1)
     else:
         raise RuntimeError('Process did not finish after human decision')
-    shot('07-human-completed.png', '/ui/history/?instanceId=' + uid,
+    shot(prefix + '07-human-completed.png', '/ui/history/?instanceId=' + uid,
          'document.querySelectorAll("#canvas .djs-element").length > 3')

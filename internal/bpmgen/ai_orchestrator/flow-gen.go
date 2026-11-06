@@ -26,12 +26,17 @@ func Deployment(svc *services.Services) map[string]bpm.DeploymentProcess {
 					CompleteType: bpm.CompleteTypeStraight,
 					NextElements: []string{},
 				},
-				"Escalate": {
-					ElementId:    "Escalate",
-					ActivateType: bpm.ActivateTypeMethod,
+				"Flow_0levoh9": {
+					ElementId:    "Flow_0levoh9",
+					ActivateType: bpm.ActivateTypeFlow,
 					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"f10"},
-					Method:       bpm.Method(svc, Escalate),
+					NextElements: []string{"HumanReview"},
+				},
+				"Flow_19081va": {
+					ElementId:    "Flow_19081va",
+					ActivateType: bpm.ActivateTypeFlow,
+					CompleteType: bpm.CompleteTypeStraight,
+					NextElements: []string{"HumanReview"},
 				},
 				"HumanReview": {
 					ElementId:    "HumanReview",
@@ -49,20 +54,6 @@ func Deployment(svc *services.Services) map[string]bpm.DeploymentProcess {
 					CompleteType: bpm.CompleteTypeScript,
 					NextElements: []string{},
 					Condition:    bpm.Condition(limit),
-				},
-				"MarkTimeout": {
-					ElementId:    "MarkTimeout",
-					ActivateType: bpm.ActivateTypeMethod,
-					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"timeoutHuman"},
-					Method:       bpm.Method(svc, MarkTimeout),
-				},
-				"Prepare": {
-					ElementId:    "Prepare",
-					ActivateType: bpm.ActivateTypeMethod,
-					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"f2"},
-					Method:       bpm.Method(svc, Prepare),
 				},
 				"ResolveHuman": {
 					ElementId:    "ResolveHuman",
@@ -92,7 +83,7 @@ func Deployment(svc *services.Services) map[string]bpm.DeploymentProcess {
 					ElementId:    "ReviewTimeout",
 					ActivateType: bpm.ActivateTypeBoundary,
 					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"fromReviewTimeout"},
+					NextElements: []string{"Flow_19081va"},
 				},
 				"Start": {
 					ElementId:    "Start",
@@ -133,28 +124,16 @@ func Deployment(svc *services.Services) map[string]bpm.DeploymentProcess {
 					ElementId:    "WriteTimeout",
 					ActivateType: bpm.ActivateTypeBoundary,
 					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"fromWriteTimeout"},
+					NextElements: []string{"Flow_0levoh9"},
 				},
 				"again": {
 					ElementId:    "again",
 					ActivateType: bpm.ActivateTypeFlow,
 					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"Prepare"},
+					NextElements: []string{"Write"},
 				},
 				"f1": {
 					ElementId:    "f1",
-					ActivateType: bpm.ActivateTypeFlow,
-					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"Prepare"},
-				},
-				"f10": {
-					ElementId:    "f10",
-					ActivateType: bpm.ActivateTypeFlow,
-					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"HumanReview"},
-				},
-				"f2": {
-					ElementId:    "f2",
 					ActivateType: bpm.ActivateTypeFlow,
 					CompleteType: bpm.CompleteTypeStraight,
 					NextElements: []string{"Write"},
@@ -177,18 +156,6 @@ func Deployment(svc *services.Services) map[string]bpm.DeploymentProcess {
 					CompleteType: bpm.CompleteTypeStraight,
 					NextElements: []string{"Done"},
 				},
-				"fromReviewTimeout": {
-					ElementId:    "fromReviewTimeout",
-					ActivateType: bpm.ActivateTypeFlow,
-					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"MarkTimeout"},
-				},
-				"fromWriteTimeout": {
-					ElementId:    "fromWriteTimeout",
-					ActivateType: bpm.ActivateTypeFlow,
-					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"MarkTimeout"},
-				},
 				"humanResolved": {
 					ElementId:    "humanResolved",
 					ActivateType: bpm.ActivateTypeFlow,
@@ -209,12 +176,6 @@ func Deployment(svc *services.Services) map[string]bpm.DeploymentProcess {
 				},
 				"stop": {
 					ElementId:    "stop",
-					ActivateType: bpm.ActivateTypeFlow,
-					CompleteType: bpm.CompleteTypeStraight,
-					NextElements: []string{"Escalate"},
-				},
-				"timeoutHuman": {
-					ElementId:    "timeoutHuman",
 					ActivateType: bpm.ActivateTypeFlow,
 					CompleteType: bpm.CompleteTypeStraight,
 					NextElements: []string{"HumanReview"},

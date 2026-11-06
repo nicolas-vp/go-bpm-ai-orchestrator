@@ -1,4 +1,4 @@
-package ai_orchestrator
+package orchestration
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func Prepare(ctx context.Context, svc *services.Services, data *model.DataModel) error {
+func prepare(ctx context.Context, svc *services.Services, data *model.DataModel) error {
 	if data.MaxRounds == 0 {
 		data.MaxRounds = 3
 	}

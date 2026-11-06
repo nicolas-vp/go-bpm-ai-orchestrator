@@ -12,6 +12,7 @@ import (
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/engine"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/bpmgen"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/bpmgen/services"
+	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/orchestration"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/pgtest"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/queue"
 )
@@ -36,7 +37,7 @@ func TestOrchestration(t *testing.T) {
 			defer cancel()
 			log := slog.New(slog.DiscardHandler)
 			svc := &services.Services{}
-			processes := bpmgen.Processes(svc)
+			processes := orchestration.Processes(svc)
 			var mu sync.Mutex
 			var calls []string
 			writes, reviews := 0, 0

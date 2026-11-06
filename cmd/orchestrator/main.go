@@ -21,6 +21,7 @@ import (
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/bpmgen"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/bpmgen/services"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/ollama"
+	"github.com/nicolas-vp/go-bpm-ai-orchestrator/internal/orchestration"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/metrics"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/migrations"
 	"github.com/nicolas-vp/go-bpm-ai-orchestrator/queue"
@@ -73,7 +74,7 @@ func run(ctx context.Context, log *slog.Logger, dsn, addr, kindPrefix string, sk
 
 	// внешние сервисы для методов task и обработчиков jobType
 	svc := &services.Services{}
-	processes := bpmgen.Processes(svc)
+	processes := orchestration.Processes(svc)
 	// метрики: состояние движка из базы, время попыток задач, рантайм Go - на /metrics
 	collector := metrics.NewCollector(pool, metrics.Options{Logger: log})
 	registry := prometheus.NewRegistry()

@@ -1,0 +1,242 @@
+{
+  "instance": {
+    "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+    "process_name": "AiOrchestrator",
+    "business_key": "layout-human-review-001",
+    "status": "completed",
+    "created_at": "2026-11-06T22:13:11.993084+03:00",
+    "updated_at": "2026-11-06T22:13:36.859064+03:00"
+  },
+  "history": {
+    "records": [
+      {
+        "id": 44,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "Start",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases."
+        },
+        "created_at": "2026-11-06T22:13:12.001371+03:00"
+      },
+      {
+        "id": 45,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "f1",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:12.002138+03:00"
+      },
+      {
+        "id": 46,
+        "event": "activated",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "Write",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:12.002751+03:00"
+      },
+      {
+        "id": 47,
+        "event": "terminated",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "Write",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:17.186561+03:00"
+      },
+      {
+        "id": 48,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "WriteTimeout",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:17.187326+03:00"
+      },
+      {
+        "id": 49,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "Flow_0levoh9",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "ai_timeout",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "needs_human",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:17.187607+03:00"
+      },
+      {
+        "id": 50,
+        "event": "activated",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "HumanReview",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "ai_timeout",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "needs_human",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:17.188185+03:00"
+      },
+      {
+        "id": 51,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "HumanReview",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "ai_timeout",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "AI превысил срок итерации. Результат отклонён, требуется отдельный повтор после проверки задания.",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "needs_human",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:36.859395+03:00"
+      },
+      {
+        "id": 52,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "humanResolved",
+        "created_at": "2026-11-06T22:13:36.85973+03:00"
+      },
+      {
+        "id": 53,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "ResolveHuman",
+        "variables": {
+          "aiTimeoutSeconds": 5,
+          "draft": "",
+          "escalationReason": "ai_timeout",
+          "goal": "Write a complete Go implementation of a bounded concurrent LRU cache, with extensive tests and explanation of all concurrency edge cases.",
+          "humanApproved": false,
+          "humanComment": "AI превысил срок итерации. Результат отклонён, требуется отдельный повтор после проверки задания.",
+          "iterationDeadline": "2026-11-06T19:13:17.002121047Z",
+          "maxRounds": 3,
+          "outcome": "rejected_by_human",
+          "review": {
+            "approved": false,
+            "feedback": ""
+          },
+          "round": 1
+        },
+        "created_at": "2026-11-06T22:13:36.860281+03:00"
+      },
+      {
+        "id": 54,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "resolved",
+        "created_at": "2026-11-06T22:13:36.86056+03:00"
+      },
+      {
+        "id": 55,
+        "event": "completed",
+        "instance_uid": "01a1b247-7d39-71e1-b695-1d838c7a0095",
+        "process_name": "AiOrchestrator",
+        "element_id": "Stopped",
+        "created_at": "2026-11-06T22:13:36.860712+03:00"
+      }
+    ]
+  }
+}

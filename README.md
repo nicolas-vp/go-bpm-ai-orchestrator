@@ -4,7 +4,7 @@
 
 Самостоятельная копия [go-bpm](https://github.com/nicolas-vp/go-bpm), исходная версия `17a32308eed8d4d0c17c68d190a23eb5719ee685`. Движок, генератор, миграции, HTTP API и консоль находятся здесь. Все исходные демопримеры удалены; зарегистрирован только процесс `AiOrchestrator`. Соседний checkout go-bpm не нужен.
 
-![Таймаут и пользовательская задача в консоли](docs/images/04-timeout.png)
+![Таймаут и пользовательская задача в консоли](docs/images/layout-04-timeout.png)
 
 ## Запуск
 
@@ -50,13 +50,12 @@ curl -fsS -X POST http://localhost:8092/api/v1/processes/AiOrchestrator/instance
 
 ```mermaid
 flowchart LR
-  Start --> Prepare[Новая итерация и срок]
-  Prepare --> Write[Исполнитель Qwen3]
+  Start --> Write[Исполнитель Qwen3]
   Write --> Review[Рецензент Qwen2.5]
   Review --> Verdict{Принято?}
   Verdict -->|да| Accepted[outcome: accepted]
   Verdict -->|нет| Limit{Есть попытки?}
-  Limit -->|да| Prepare
+  Limit -->|да| Write
   Limit -->|нет| Human[Нужен человек · user task]
   Write -. таймаут .-> Human
   Review -. таймаут .-> Human
@@ -67,7 +66,7 @@ flowchart LR
 
 ### Таймаут и пользовательская задача
 
-На обеих AI-задачах стоят **прерывающие граничные таймеры**. У итерации общий срок: `aiTimeoutSeconds` (по умолчанию 120, диапазон 1–600). Метод подготовки записывает `iterationDeadline` как RFC 3339; рецензент получает оставшееся время этой же итерации. При доработке начинается новый срок.
+На обеих AI-задачах стоят **прерывающие граничные таймеры**. У итерации общий срок: `aiTimeoutSeconds` (по умолчанию 120, диапазон 1–600). Обработчик перехода к исполнителю записывает `iterationDeadline` как RFC 3339; рецензент получает оставшееся время этой же итерации. При доработке начинается новый срок.
 
 Для наглядного таймаута запустите длительное задание с `"aiTimeoutSeconds": 5`. На диаграмме будет видна прерванная AI-задача, пройденный таймер и ожидание человека.
 
@@ -104,6 +103,7 @@ GO_BPM_TEST_DSN='postgres://user:password@localhost:5432/ai_orchestrator_test?ss
 
 - [Архитектура, статья и границы примера](docs/design.md).
 - [Журнал, проверка стенда и скриншоты](docs/experiment/README.md).
+- [Обновлённая схема без технических блоков](docs/experiment/simplified-layout.md).
 - [Таймеры и прохождение пользовательской задачи](docs/experiment/timers-and-human-review.md).
 - [Параметры моделей на стенде](docs/experiment/models.json).
 - [BPMN — источник процесса](process/orchestrator.bpmn).
